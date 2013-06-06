@@ -3900,4 +3900,21 @@ public class StorageService extends NotificationBroadcasterSupport implements IE
     {
         rangeXferExecutor.tearDown();
     }
+    
+    public double getSeverity()
+    {
+        return severity.doubleValue();
+    }
+
+    /**
+     * Change the severity of this node. Probably a bad idea to use it except by the operator in JMX
+     */
+    public void setSeverity(double value) throws UnsupportedOperationException
+    {
+        if (!Gossiper.instance.isEnabled())
+            throw new UnsupportedOperationException("Gossip is not enabled");
+        severity.set(value);
+        VersionedValue updated = StorageService.instance.valueFactory.severity(value);
+        Gossiper.instance.addLocalApplicationState(ApplicationState.SEVERITY, updated);
+    }
 }

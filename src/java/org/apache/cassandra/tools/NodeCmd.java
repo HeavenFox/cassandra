@@ -157,7 +157,10 @@ public class NodeCmd
         RESETLOCALSCHEMA,
         PREDICTCONSISTENCY,
         ENABLEBACKUP,
-        DISABLEBACKUP
+        DISABLEBACKUP,
+        DISABLEREAD,
+        REENABLEREAD,
+        SETSEVERITY
     }
 
 
@@ -602,11 +605,32 @@ public class NodeCmd
                     cacheService.getRowCacheRequests(),
                     cacheService.getRowCacheRecentHitRate(),
                     cacheService.getRowCacheSavePeriodInSeconds());
+        
+        // Severity
+        outs.printf("%-17s: %.2f%n", "Severity", probe.getSeverity());
 
         if (toks.size() > 1 && cmd.hasOption(TOKENS_OPT.left))
         {
             for (String tok : toks)
                 outs.printf("%-17s: %s%n", "Token", tok);
+        }
+    }
+    
+    public void disableRead(PrintStream outs) {
+        probe.disableRead();
+        outs.println("Node will no longer serve reads (except when absolutely necessary)");
+    }
+    
+    public void reenableRead(PrintStream outs) {
+        probe.reenableRead();
+        outs.println("Node has now started serving reads");
+    }
+    
+    public void setSeverity(PrintStream outs, double value) {
+        try {
+            probe.setSeverity(value);
+        } catch (UnsupportedOperationException e) {
+            outs.println(e.getMessage());
         }
     }
 
@@ -1060,6 +1084,8 @@ public class NodeCmd
                 case COMPACTIONSTATS : nodeCmd.printCompactionStats(System.out); break;
                 case DISABLEBINARY   : probe.stopNativeTransport(); break;
                 case ENABLEBINARY    : probe.startNativeTransport(); break;
+                case DISABLEREAD     : nodeCmd.disableRead(System.out); break;
+                case REENABLEREAD    : nodeCmd.reenableRead(System.out); break;
                 case STATUSBINARY    : nodeCmd.printIsNativeTransportRunning(System.out); break;
                 case DISABLEGOSSIP   : probe.stopGossiping(); break;
                 case ENABLEGOSSIP    : probe.startGossiping(); break;
@@ -1143,6 +1169,15 @@ public class NodeCmd
                 case SETTRACEPROBABILITY :
                     if (arguments.length != 1) { badUse("Missing value argument."); }
                     probe.setTraceProbability(Double.parseDouble(arguments[0]));
+                    break;
+                
+                case SETSEVERITY :
+                    if (arguments.length != 1) { badUse("Missing value argument."); }
+                    try {
+                        probe.setSeverity(Double.parseDouble(arguments[0]));
+                    } catch (NumberFormatException e2) {
+                        badUse("Error: please provide a valid number");
+                    }
                     break;
 
                 case REBUILD :

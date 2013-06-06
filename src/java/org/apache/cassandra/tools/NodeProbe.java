@@ -833,6 +833,22 @@ public class NodeProbe
     {
         return failed;
     }
+    
+    public double getSeverity() {
+        return ssProxy.getSeverity();
+    }
+    
+    public void setSeverity(double value) throws UnsupportedOperationException {
+        ssProxy.setSeverity(value);
+    }
+    
+    public void disableRead() {
+        spProxy.disableRead();
+    }
+    
+    public void reenableRead() {
+        spProxy.reenableRead();
+    }
 }
 
 class ColumnFamilyStoreMBeanIterator implements Iterator<Map.Entry<String, ColumnFamilyStoreMBean>>

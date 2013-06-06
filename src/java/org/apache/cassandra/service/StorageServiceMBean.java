@@ -470,4 +470,7 @@ public interface StorageServiceMBean extends NotificationEmitter
     public void enableScheduledRangeXfers();
     /** Disable processing of queued range transfers. */
     public void disableScheduledRangeXfers();
+    
+    public double getSeverity();
+    public void setSeverity(double value) throws UnsupportedOperationException;
 }
