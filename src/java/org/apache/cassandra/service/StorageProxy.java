@@ -70,10 +70,6 @@ public class StorageProxy implements StorageProxyMBean
     public static final String MBEAN_NAME = "org.apache.cassandra.db:type=StorageProxy";
     private static final Logger logger = LoggerFactory.getLogger(StorageProxy.class);
     private static final boolean OPTIMIZE_LOCAL_REQUESTS = true; // set to false to test messagingservice path on single node
-    
-    private static boolean isReadDisabled = false;
-    // This number is 2^30. It should be big enough while not causing loss in precision
-    private static final double readDisableSeverity = 1073741824.0;
 
     public static final String UNREACHABLE = "UNREACHABLE";
 
@@ -1700,27 +1696,4 @@ public class StorageProxy implements StorageProxyMBean
 
     public Long getTruncateRpcTimeout() { return DatabaseDescriptor.getTruncateRpcTimeout(); }
     public void setTruncateRpcTimeout(Long timeoutInMillis) { DatabaseDescriptor.setTruncateRpcTimeout(timeoutInMillis); }
-    
-    /**
-     * Disable read (except as a last resort) by adding a big number to the severity
-     */
-    public void disableRead()
-    {
-        if (!isReadDisabled) {
-            isReadDisabled = true;
-            StorageService.instance.reportSeverity(readDisableSeverity);
-        }
-        
-    }
-    
-    /**
-     * Reenable read
-     */
-    public void reenableRead()
-    {
-        if (isReadDisabled) {
-            isReadDisabled = false;
-            StorageService.instance.reportSeverity(-readDisableSeverity);
-        }
-    }
 }

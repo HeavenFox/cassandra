@@ -158,8 +158,6 @@ public class NodeCmd
         PREDICTCONSISTENCY,
         ENABLEBACKUP,
         DISABLEBACKUP,
-        DISABLEREAD,
-        REENABLEREAD,
         SETSEVERITY
     }
 
@@ -614,16 +612,6 @@ public class NodeCmd
             for (String tok : toks)
                 outs.printf("%-17s: %s%n", "Token", tok);
         }
-    }
-    
-    public void disableRead(PrintStream outs) {
-        probe.disableRead();
-        outs.println("Node will no longer serve reads (except when absolutely necessary)");
-    }
-    
-    public void reenableRead(PrintStream outs) {
-        probe.reenableRead();
-        outs.println("Node has now started serving reads");
     }
     
     public void setSeverity(PrintStream outs, double value) {
@@ -1084,8 +1072,6 @@ public class NodeCmd
                 case COMPACTIONSTATS : nodeCmd.printCompactionStats(System.out); break;
                 case DISABLEBINARY   : probe.stopNativeTransport(); break;
                 case ENABLEBINARY    : probe.startNativeTransport(); break;
-                case DISABLEREAD     : nodeCmd.disableRead(System.out); break;
-                case REENABLEREAD    : nodeCmd.reenableRead(System.out); break;
                 case STATUSBINARY    : nodeCmd.printIsNativeTransportRunning(System.out); break;
                 case DISABLEGOSSIP   : probe.stopGossiping(); break;
                 case ENABLEGOSSIP    : probe.startGossiping(); break;
